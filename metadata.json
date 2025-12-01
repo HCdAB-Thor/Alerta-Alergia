@@ -1,0 +1,7 @@
+{
+  "name": "Alerta Alergia",
+  "description": "Um assistente inteligente que analisa rótulos de produtos para identificar alérgenos perigosos baseados no seu perfil.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
