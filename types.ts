@@ -1,4 +1,5 @@
 export interface UserProfile {
+  name?: string;
   allergens: string[];
 }
 

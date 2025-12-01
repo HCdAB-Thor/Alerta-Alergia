@@ -8,6 +8,7 @@ function App() {
   // State
   const [view, setView] = useState<AppView>(AppView.HOME);
   const [allergens, setAllergens] = useState<string[]>([]);
+  const [userName, setUserName] = useState<string>('');
   const [newAllergen, setNewAllergen] = useState('');
   const [scanResult, setScanResult] = useState<AnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -17,13 +18,18 @@ function App() {
 
   // Load from LocalStorage
   useEffect(() => {
-    const saved = localStorage.getItem('user_allergens');
-    if (saved) {
+    const savedAllergens = localStorage.getItem('user_allergens');
+    if (savedAllergens) {
       try {
-        setAllergens(JSON.parse(saved));
+        setAllergens(JSON.parse(savedAllergens));
       } catch (e) {
         console.error("Failed to parse allergens", e);
       }
+    }
+
+    const savedName = localStorage.getItem('user_name');
+    if (savedName) {
+      setUserName(savedName);
     }
   }, []);
 
@@ -31,6 +37,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('user_allergens', JSON.stringify(allergens));
   }, [allergens]);
+
+  useEffect(() => {
+    localStorage.setItem('user_name', userName);
+  }, [userName]);
 
   // Handlers
   const addAllergen = () => {
@@ -138,8 +148,22 @@ function App() {
   const renderProfile = () => (
     <div className="min-h-screen bg-white pb-32">
       <div className="bg-teal-600 p-8 text-white rounded-b-[2rem] shadow-lg mb-6">
-        <h1 className="text-3xl font-bold mb-2">Seu Perfil</h1>
-        <p className="text-teal-100 text-sm opacity-90">Gerencie sua lista de alergias. Seus dados ficam salvos automaticamente no dispositivo.</p>
+        <div className="relative mb-2">
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Seu Perfil"
+              className="w-full bg-transparent text-3xl font-bold text-white placeholder-teal-200 focus:outline-none border-b-2 border-transparent focus:border-white/20 transition-all pb-1 pr-8"
+            />
+            <div className="absolute right-0 top-1 pointer-events-none text-teal-200 opacity-60">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
+                  <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z" />
+                  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25v-5.5a.75.75 0 00-1.5 0v5.5a1.25 1.25 0 01-1.25 1.25h-9.5a1.25 1.25 0 01-1.25-1.25v-9.5z" />
+                </svg>
+            </div>
+        </div>
+        <p className="text-teal-100 text-sm opacity-90">Os dados ficam salvos neste dispositivo.</p>
       </div>
 
       <div className="px-6 max-w-lg mx-auto">
@@ -293,13 +317,15 @@ function App() {
       {/* Header */}
       <header className="bg-white p-8 rounded-b-[2.5rem] shadow-sm z-10">
         <div className="flex justify-between items-center mb-6 max-w-lg mx-auto">
-          <div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">Bem-vindo ao</p>
+          <div className="truncate pr-4">
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+                {userName ? `Olá, ${userName.split(' ')[0]}` : 'Bem-vindo ao'}
+            </p>
             <h1 className="text-3xl font-black text-teal-700 tracking-tight">Alerta Alergia</h1>
           </div>
           <button 
             onClick={() => setView(AppView.PROFILE)}
-            className="bg-gray-50 p-3 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+            className="bg-gray-50 p-3 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm flex-shrink-0"
           >
             <UserIcon className="w-6 h-6 text-gray-700" />
           </button>
