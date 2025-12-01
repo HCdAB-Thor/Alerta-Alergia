@@ -4,6 +4,36 @@ interface IconProps {
   className?: string;
 }
 
+export const AppLogo: React.FC<IconProps> = ({ className = "w-24 h-24" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" className={className}>
+    {/* Shadow/Depth group */}
+    <g opacity="0.1" transform="translate(4 4)">
+        <path d="M70 20 h60 a10 10 0 0 1 10 10 v40 h40 a10 10 0 0 1 10 10 v60 a10 10 0 0 1 -10 10 h-40 v40 a10 10 0 0 1 -10 10 h-60 a10 10 0 0 1 -10 -10 v-40 h-40 a10 10 0 0 1 -10 -10 v-60 a10 10 0 0 1 10 -10 h40 v-40 a10 10 0 0 1 10 -10 z" fill="black" />
+    </g>
+
+    {/* Main Cross Body - Red */}
+    <path d="M70 20 h60 a10 10 0 0 1 10 10 v40 h40 a10 10 0 0 1 10 10 v60 a10 10 0 0 1 -10 10 h-40 v40 a10 10 0 0 1 -10 10 h-60 a10 10 0 0 1 -10 -10 v-40 h-40 a10 10 0 0 1 -10 -10 v-60 a10 10 0 0 1 10 -10 h40 v-40 a10 10 0 0 1 10 -10 z" fill="#DC2626" stroke="#B91C1C" strokeWidth="4" />
+    
+    {/* Exclamation Mark - White */}
+    <rect x="90" y="55" width="20" height="55" rx="5" fill="white" />
+    <circle cx="100" cy="135" r="12" fill="white" />
+
+    {/* Spoon - Top Right (Stylized) */}
+    <g transform="translate(155 45) rotate(45)">
+       <path d="M-12 -20 C -12 -35, 12 -35, 12 -20 C 12 -5, 5 0, 5 5 L 5 40 L -5 40 L -5 5 C -5 0, -12 -5, -12 -20" fill="#DC2626" stroke="white" strokeWidth="3" />
+    </g>
+
+    {/* Fork - Bottom Left (Stylized) */}
+    <g transform="translate(45 155) rotate(45)">
+       <path d="M-10 -25 L -10 10 C -10 20, 10 20, 10 10 L 10 -25 M 0 -25 L 0 5" fill="none" stroke="#DC2626" strokeWidth="6" strokeLinecap="round" />
+       <path d="M0 10 L 0 45" stroke="#DC2626" strokeWidth="7" strokeLinecap="round" />
+       {/* White outline for separation */}
+        <path d="M-10 -25 L -10 10 C -10 20, 10 20, 10 10 L 10 -25 M 0 -25 L 0 5" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <path d="M0 10 L 0 45" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </g>
+  </svg>
+);
+
 export const CameraIcon: React.FC<IconProps> = ({ className = "w-6 h-6" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />

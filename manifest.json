@@ -3,12 +3,12 @@
   "name": "Alerta Alergia Scanner",
   "icons": [
     {
-      "src": "https://placehold.co/192x192/0d9488/ffffff.png?text=AA",
+      "src": "/logo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://placehold.co/512x512/0d9488/ffffff.png?text=AA",
+      "src": "/logo.png",
       "type": "image/png",
       "sizes": "512x512"
     }

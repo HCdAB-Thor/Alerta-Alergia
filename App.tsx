@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile, AnalysisResult, AppView } from './types';
 import { analyzeProductImage } from './services/geminiService';
 import Scanner from './components/Scanner';
-import { PlusIcon, TrashIcon, UserIcon, CheckCircleIcon, XCircleIcon, CameraIcon, ExclamationTriangleIcon, PhotoIcon } from './components/Icons';
+import { PlusIcon, TrashIcon, UserIcon, CheckCircleIcon, XCircleIcon, CameraIcon, ExclamationTriangleIcon, PhotoIcon, AppLogo } from './components/Icons';
 
 function App() {
   // State
@@ -315,23 +315,26 @@ function App() {
   const renderHome = () => (
     <div className="min-h-screen bg-gray-100 flex flex-col relative">
       {/* Header */}
-      <header className="bg-white p-8 rounded-b-[2.5rem] shadow-sm z-10">
-        <div className="flex justify-between items-center mb-6 max-w-lg mx-auto">
-          <div className="truncate pr-4">
+      <header className="bg-white px-8 pt-8 pb-10 rounded-b-[2.5rem] shadow-sm z-10 relative overflow-hidden">
+        <div className="flex justify-between items-start max-w-lg mx-auto relative z-10">
+          <div className="flex flex-col">
             <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
-                {userName ? `Olá, ${userName.split(' ')[0]}` : 'Bem-vindo ao'}
+                {userName ? `Olá, ${userName.split(' ')[0]}` : 'Bem-vindo'}
             </p>
-            <h1 className="text-3xl font-black text-teal-700 tracking-tight">Alerta Alergia</h1>
+            <div className="flex items-center gap-3">
+                <AppLogo className="w-12 h-12" />
+                <h1 className="text-3xl font-black text-teal-700 tracking-tight leading-none">Alerta Alergia</h1>
+            </div>
           </div>
           <button 
             onClick={() => setView(AppView.PROFILE)}
-            className="bg-gray-50 p-3 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm flex-shrink-0"
+            className="bg-gray-50 p-3 rounded-2xl hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm flex-shrink-0 mt-1"
           >
             <UserIcon className="w-6 h-6 text-gray-700" />
           </button>
         </div>
 
-        <div className="max-w-lg mx-auto bg-gradient-to-r from-teal-50 to-white p-1 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setView(AppView.PROFILE)}>
+        <div className="max-w-lg mx-auto bg-gradient-to-r from-teal-50 to-white p-1 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition-shadow mt-6" onClick={() => setView(AppView.PROFILE)}>
             <div className="bg-white/50 p-4 rounded-xl flex items-center justify-between border border-teal-100">
                 <div className="flex items-center gap-4">
                     <div className="bg-teal-100 p-2 rounded-lg">
