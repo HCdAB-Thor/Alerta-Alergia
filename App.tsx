@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile, AnalysisResult, AppView } from './types';
 import { analyzeProductImage } from './services/geminiService';
 import Scanner from './components/Scanner';
-import { PlusIcon, TrashIcon, UserIcon, CheckCircleIcon, XCircleIcon, CameraIcon, ExclamationTriangleIcon, PhotoIcon, AppLogo } from './components/Icons';
+import { PlusIcon, TrashIcon, UserIcon, CheckCircleIcon, XCircleIcon, CameraIcon, ExclamationTriangleIcon, PhotoIcon } from './components/Icons';
 
 function App() {
   // State
@@ -322,7 +322,6 @@ function App() {
                 {userName ? `Olá, ${userName.split(' ')[0]}` : 'Bem-vindo'}
             </p>
             <div className="flex items-center gap-3">
-                <AppLogo className="w-12 h-12" />
                 <h1 className="text-3xl font-black text-teal-700 tracking-tight leading-none">Alerta Alergia</h1>
             </div>
           </div>
