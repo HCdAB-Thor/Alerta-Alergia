@@ -16,10 +16,20 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
   const startCamera = async () => {
     setError('');
     
-    // Configurações ideais para celular (câmera traseira)
+    // Verifica suporte básico do navegador
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Seu navegador não suporta acesso à câmera ou o site não está seguro (HTTPS).");
+        return;
+    }
+
+    // Configurações otimizadas para Android
+    // audio: false é CRUCIAL para evitar prompts extras que causam rejeição
     const constraints = {
+      audio: false, 
       video: {
-        facingMode: 'environment'
+        facingMode: 'environment', // Tenta câmera traseira
+        width: { ideal: 1280 },    // Ajuda o driver a selecionar a câmera correta
+        height: { ideal: 720 }
       }
     };
 
@@ -27,12 +37,15 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       handleStreamSuccess(mediaStream);
     } catch (err: any) {
-      console.warn("Tentativa 1 (Environment) falhou:", err);
+      console.warn("Tentativa 1 (Environment HD) falhou:", err);
       
-      // Tentativa 2: Fallback para qualquer câmera (sem especificar facingMode)
-      // Útil para alguns Androids antigos ou emuladores que não reportam 'environment'
+      // Tentativa 2: Fallback genérico (máxima compatibilidade)
       try {
-        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const fallbackConstraints = { 
+            audio: false,
+            video: true 
+        };
+        const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
         handleStreamSuccess(fallbackStream);
       } catch (finalErr: any) {
         console.error("Erro fatal ao acessar câmera:", finalErr);
@@ -46,27 +59,30 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
     setPermissionStatus('granted');
     if (videoRef.current) {
       videoRef.current.srcObject = mediaStream;
-      // Garante que o vídeo toque no Android/iOS
+      // Garante que o vídeo toque no Android/iOS (requer playsInline no elemento)
       videoRef.current.play().catch(e => console.error("Erro ao dar play no vídeo:", e));
     }
   };
 
   const handleError = (err: any) => {
     let errorMessage = "Não foi possível acessar a câmera.";
+    let status: 'denied' | 'prompt' = 'prompt';
     
-    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-       errorMessage = "Permissão negada. Por favor, permita o acesso à câmera nas configurações do seu navegador.";
-       setPermissionStatus('denied');
+    // Tratamento de erros comuns
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError' || err.message?.includes('Permission dismissed')) {
+       errorMessage = "Acesso à câmera foi negado.";
+       status = 'denied';
     } else if (err.name === 'NotFoundError') {
        errorMessage = "Nenhuma câmera encontrada neste dispositivo.";
     } else if (err.name === 'NotReadableError') {
-       errorMessage = "A câmera pode estar em uso por outro aplicativo. Feche outros apps e tente novamente.";
+       errorMessage = "A câmera pode estar em uso por outro app. Feche-o e tente novamente.";
     } else if (err.name === 'OverconstrainedError') {
-       errorMessage = "A câmera deste dispositivo não suporta a resolução solicitada.";
+       errorMessage = "A câmera não suporta a resolução solicitada.";
     } else if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
-       errorMessage = "A câmera requer uma conexão segura (HTTPS).";
+       errorMessage = "Por segurança, o Android exige que o site use HTTPS para acessar a câmera.";
     }
 
+    setPermissionStatus(status);
     setError(errorMessage);
   };
 
@@ -95,7 +111,6 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
       
-      // Garante que pegamos a dimensão real do vídeo renderizado
       if (video.videoWidth === 0 || video.videoHeight === 0) return;
 
       canvas.width = video.videoWidth;
@@ -105,7 +120,7 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Convert to Base64 (JPEG, quality 0.8)
+        // Qualidade 0.85 é um bom equilíbrio para OCR
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         const base64Data = dataUrl.split(',')[1]; 
         
@@ -125,21 +140,24 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
                 </svg>
             </div>
             <h3 className="text-2xl font-bold mb-3">Acesso Necessário</h3>
-            <p className="text-gray-300 mb-8 text-base leading-relaxed">{error}</p>
+            <p className="text-gray-300 mb-6 text-base leading-relaxed">{error}</p>
             
             <div className="flex flex-col gap-3">
-                {permissionStatus === 'denied' ? (
-                   <div className="bg-gray-700/50 p-4 rounded-xl text-sm text-gray-400 mb-2">
-                      Para ativar: Abra as Configurações do Navegador &gt; Configurações do Site &gt; Câmera &gt; Permitir.
+                {permissionStatus === 'denied' && (
+                   <div className="bg-gray-700/50 p-4 rounded-xl text-sm text-left text-gray-400 mb-2">
+                      <p className="font-bold text-gray-300 mb-1">Como ativar:</p>
+                      1. Toque no cadeado 🔒 na barra de endereço.<br/>
+                      2. Vá em "Permissões" e ative a "Câmera".<br/>
+                      3. Clique em "Tentar Novamente" abaixo.
                    </div>
-                ) : (
-                  <button 
-                    onClick={() => startCamera()}
-                    className="bg-teal-600 w-full py-4 rounded-xl font-bold active:scale-95 transition-transform hover:bg-teal-700 text-lg shadow-lg"
-                  >
-                    Tentar Novamente
-                  </button>
                 )}
+                
+                <button 
+                  onClick={() => startCamera()}
+                  className="bg-teal-600 w-full py-4 rounded-xl font-bold active:scale-95 transition-transform hover:bg-teal-700 text-lg shadow-lg text-white"
+                >
+                  Tentar Novamente
+                </button>
                 
                 <button 
                   onClick={onCancel}
@@ -166,7 +184,6 @@ const Scanner: React.FC<ScannerProps> = ({ onCapture, onCancel }) => {
 
       {/* Camera View */}
       <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
-        {/* O atributo playsInline é CRUCIAL para iOS/Android não abrirem o player nativo em tela cheia */}
         <video 
           ref={videoRef} 
           autoPlay 
